@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./secrets/**)",
+      "Read(~/.ssh/**)",
+      "WebFetch",
+      "WebSearch",
+      "mcp__claude-in-chrome__javascript_tool",
+      "mcp__claude-in-chrome__read_network_requests",
+      "mcp__claude-in-chrome__file_upload",
+      "mcp__claude-in-chrome__upload_image",
+      "mcp__claude-in-chrome__gif_creator"
+    ]
+  }
+}

@@ -1,0 +1,14 @@
+.venv/
+_workspace/
+_workspace_*/
+specs/*
+!specs/README.md
+output/*
+!output/.gitkeep
+.env
+.env.*
+secrets/
+.claude/settings.local.json
+.DS_Store
+__pycache__/
+*.pyc
