@@ -11,7 +11,23 @@
       "mcp__claude-in-chrome__read_network_requests",
       "mcp__claude-in-chrome__file_upload",
       "mcp__claude-in-chrome__upload_image",
-      "mcp__claude-in-chrome__gif_creator"
+      "mcp__claude-in-chrome__gif_creator",
+      "Bash(*maestro* cloud*)",
+      "Bash(*maestro* studio*)",
+      "Bash(*maestro* record*)",
+      "Bash(*maestro* login*)",
+      "Bash(*maestro* upload*)",
+      "Bash(*adb* pull*)",
+      "Bash(*adb* backup*)",
+      "Bash(*adb* bugreport*)",
+      "Bash(*adb* connect*)",
+      "Bash(*adb* tcpip*)",
+      "Bash(*adb* run-as*)",
+      "Bash(*screencap*)",
+      "Bash(*screenrecord*)",
+      "Bash(*adb* shell input text*)",
+      "Bash(*curl*|*sh*)",
+      "Bash(*wget*|*sh*)"
     ]
   }
 }

@@ -1,6 +1,6 @@
 ---
 name: testcase-design
-description: "Thiết kế bộ test case đầy đủ và chi tiết từ yêu cầu đã được đối chiếu và xác nhận với spec (functional, validation, biên, negative, phân quyền, trạng thái, UI, bảo mật cơ bản, tích hợp), rồi xuất file Excel vào thư mục output/ và ghi kết quả chạy thử vào cùng file. Dùng khi tạo, bổ sung, rà soát test case hoặc xuất/cập nhật file Excel test case."
+description: "Thiết kế bộ test case đầy đủ và chi tiết từ yêu cầu đã được đối chiếu và xác nhận với spec (functional, validation, biên, negative, phân quyền, trạng thái, UI, bảo mật cơ bản, tích hợp, đặc thù mobile app), rồi xuất file Excel vào thư mục output/ và ghi kết quả chạy thử vào cùng file. Dùng khi tạo, bổ sung, rà soát test case hoặc xuất/cập nhật file Excel test case."
 ---
 
 # Thiết kế test case và xuất Excel
@@ -32,6 +32,7 @@ Với mỗi REQ và mỗi quy tắc `SPEC_ONLY`, xét lần lượt các chiều
 | Tích hợp & dữ liệu | Dữ liệu lưu đúng, hiển thị đúng ở màn hình liên quan, đồng thời nhiều người dùng |
 | Bảo mật cơ bản | Escape ký tự đặc biệt, không lộ thông tin nhạy cảm trong thông báo lỗi, khóa tài khoản, kiểm soát truy cập |
 | Phi chức năng (khi spec nêu) | Hiệu năng, tương thích trình duyệt, khả năng truy cập |
+| Đặc thù mobile (khi `platform` là Android/iOS) | Vòng đời app (nền/tiền cảnh, đóng hẳn rồi mở lại), xoay màn hình, hộp thoại quyền (cho phép/từ chối), mất mạng và khôi phục mạng, nút Back/cử chỉ hệ thống, bàn phím che ô nhập, deep link, kích thước màn hình khác nhau, cập nhật app giữ dữ liệu |
 
 ## Chất lượng một test case
 
@@ -44,6 +45,9 @@ Với mỗi REQ và mỗi quy tắc `SPEC_ONLY`, xét lần lượt các chiều
 - **Ưu tiên**: P0 = chặn luồng chính/bảo mật/mất dữ liệu; P1 = chức năng quan trọng; P2 = biên, validation phụ; P3 = giao diện, thẩm mỹ.
 - **Dữ liệu**: chỉ placeholder hoặc dữ liệu giả (theo chính sách bảo mật). Mô tả quy tắc sinh giá trị ở sheet Test Data.
 - **Cờ `chrome_testable`**: "Y" chỉ khi thực hiện được qua giao diện web trên môi trường test, không cần OTP/email/SMS thật, không thanh toán thật, không phá hủy dữ liệu thật. Các TC khác là "N" (người dùng chạy thủ công).
+
+- **Cờ `platform`**: `Web`, `Android` hoặc `iOS` theo nền tảng mà TC nhắm tới (lấy từ yêu cầu; mơ hồ thì orchestrator đã hỏi ở Bước 1). Bước của TC mobile viết theo thao tác trên màn hình điện thoại (chạm, vuốt, nút Back), nêu rõ tên màn hình/nhãn nút để chuyển được thành flow tự động.
+- **Cờ `mobile_testable`**: "Y" chỉ khi `platform = Android`, thực hiện được trên Android emulator bằng Maestro (chạm, nhập chữ, vuốt, kiểm văn bản), không cần mật khẩu phải gõ, OTP/SMS/email thật, camera, vân tay, push thật, GPS thật, Bluetooth/NFC, thanh toán thật, phá hủy dữ liệu thật. Các TC khác là "N" (người dùng chạy tay trên thiết bị thật). Không đánh "Y" đồng thời với `chrome_testable`.
 
 Mã TC: `TC-<MODULE ngắn>-<số 3 chữ số>`, ví dụ `TC-AUTH-001`.
 
@@ -60,9 +64,20 @@ Script kiểm tra cấu trúc, độ phủ REQ→TC và quét dữ liệu nhạy
 
 Sheet tạo ra: Tổng quan (thống kê tự cập nhật theo trạng thái), Test Cases, Traceability, Spec Mapping (điểm lệch và quyết định), Test Data, Pretest Log.
 
+## Tài liệu Word cho người đọc
+
+Mọi tài liệu văn bản giao cho người đọc (đề xuất cập nhật spec, báo cáo, ghi chú) là `.docx`, không phải `.md`. Lý do: người đọc là QA/PM mở bằng Word, còn `.md` hiện nguyên ký hiệu `#`, `**` và không in, không bình luận được. Ghi nội dung vào `_workspace/doc_<tên>.json` theo `references/document-format.md` rồi chạy:
+
+```
+.venv/bin/python -I .claude/skills/testcase-design/scripts/build_docx.py \
+  --input _workspace/doc_<tên>.json --output output/<Loại>_<tên-ngắn>_<YYYYMMDD>.docx
+```
+
+Cùng quy tắc với Excel: script quét dữ liệu nhạy cảm (mã 3 thì sửa nội dung, không tắt bộ quét), kiểm cấu trúc (mã 2), không ghi đè file cũ.
+
 ## Ghi kết quả chạy thử vào cùng file
 
-Sau khi `browser-tester` ghi `_workspace/05_pretest_results.json` (định dạng ở `references/testcase-format.md`):
+Sau khi `browser-tester` hoặc `mobile-tester` ghi `_workspace/05_pretest_results.json` (định dạng ở `references/testcase-format.md`):
 
 ```
 .venv/bin/python -I .claude/skills/testcase-design/scripts/write_results.py \

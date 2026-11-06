@@ -14,7 +14,7 @@ import sys
 from datetime import datetime
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from xlsx_common import STATUSES, PRIORITIES, MAPPING_STATUSES, fail_on_secrets  # noqa: E402
+from xlsx_common import STATUSES, PRIORITIES, MAPPING_STATUSES, PLATFORMS, fail_on_secrets  # noqa: E402
 
 from openpyxl import Workbook  # noqa: E402
 from openpyxl.formatting.rule import CellIsRule  # noqa: E402
@@ -36,7 +36,9 @@ TC_COLUMNS = [
     ("test_data", "Dữ liệu test", 28),
     ("steps", "Các bước thực hiện", 48),
     ("expected", "Kết quả mong đợi", 42),
+    ("platform", "Nền tảng", 10),
     ("chrome_testable", "Chạy được bằng Chrome", 12),
+    ("mobile_testable", "Chạy được bằng Mobile (Maestro)", 14),
     ("status", "Trạng thái", 12),
     ("actual", "Kết quả thực tế", 36),
     ("executed_at", "Thời điểm chạy", 18),
@@ -90,6 +92,12 @@ def validate(data):
             errs.append(f"{tid}: priority '{tc.get('priority')}' không thuộc {PRIORITIES}")
         if tc.get("status", "Not Run") not in STATUSES:
             errs.append(f"{tid}: status không hợp lệ")
+        if tc.get("platform") and tc["platform"] not in PLATFORMS:
+            errs.append(f"{tid}: platform '{tc['platform']}' không thuộc {PLATFORMS}")
+        # Mỗi TC chỉ chạy tự động trên một môi trường: tránh đánh dấu cả Chrome lẫn Mobile
+        # vì Chrome chỉ điều khiển web trên máy tính, Maestro chỉ điều khiển app trên emulator.
+        if str(tc.get("chrome_testable", "N")).upper() == "Y" and str(tc.get("mobile_testable", "N")).upper() == "Y":
+            errs.append(f"{tid}: chrome_testable và mobile_testable không thể cùng là Y (tách thành hai TC theo nền tảng)")
         for rid in (tc.get("req_ids") or []) if isinstance(tc.get("req_ids"), list) else []:
             if req_ids and rid not in req_ids:
                 errs.append(f"{tid}: req_ids '{rid}' không có trong requirements")
@@ -118,8 +126,10 @@ def build(data, out_path):
             v = tc.get(key)
             if key == "status" and not v:
                 v = "Not Run"
-            if key == "chrome_testable" and v is None:
+            if key in ("chrome_testable", "mobile_testable") and v is None:
                 v = "N"
+            if key == "platform" and not v:
+                v = "Web"
             if key == "req_ids" and isinstance(v, list):
                 v = ", ".join(v)
             row.append(as_text(v))
@@ -136,7 +146,9 @@ def build(data, out_path):
     dv_s = DataValidation(type="list", formula1='"' + ",".join(STATUSES) + '"', allow_blank=False)
     dv_p = DataValidation(type="list", formula1='"' + ",".join(PRIORITIES) + '"', allow_blank=False)
     dv_c = DataValidation(type="list", formula1='"Y,N"', allow_blank=False)
-    for dv, k in ((dv_s, "status"), (dv_p, "priority"), (dv_c, "chrome_testable")):
+    dv_pf = DataValidation(type="list", formula1='"' + ",".join(PLATFORMS) + '"', allow_blank=False)
+    for dv, k in ((dv_s, "status"), (dv_p, "priority"), (dv_c, "chrome_testable"),
+                  (dv_c, "mobile_testable"), (dv_pf, "platform")):
         ws.add_data_validation(dv)
         dv.add(f"{col[k]}2:{col[k]}{max(n, 2) + 500}")
     rng = f"{col['status']}2:{col['status']}{max(n, 2) + 500}"
