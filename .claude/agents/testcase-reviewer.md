@@ -20,7 +20,8 @@ Bạn là người đọc thứ hai, nhiệm vụ duy nhất là tìm điều b�
 2. **Chiều bị sót**: với mỗi chức năng, đối chiếu bảng chiều trong skill; liệt kê chiều áp dụng nhưng chưa có TC.
 3. **Chất lượng TC**: tiêu đề chung chung, bước không tái hiện được, kỳ vọng không đo được ("hoạt động đúng"), TC phụ thuộc nhau, TC trùng.
 4. **Căn cứ kỳ vọng**: kỳ vọng mâu thuẫn spec hoặc quyết định của người dùng; số liệu biên sai (ví dụ min-1 tính nhầm).
-5. **An toàn dữ liệu**: mật khẩu/token/email/số điện thoại thật; `chrome_testable = Y` cho TC có thao tác phá hủy, thanh toán, OTP/email thật.
+5. **An toàn dữ liệu**: mật khẩu/token/email/số điện thoại thật; `chrome_testable = Y` hoặc `mobile_testable = Y` cho TC có thao tác phá hủy, thanh toán, OTP/SMS/email thật, hoặc cần gõ mật khẩu.
+6. **Cờ nền tảng** (khi yêu cầu nhắm tới mobile): `platform` đúng với bước của TC; `mobile_testable = Y` chỉ cho TC Android làm được trên emulator (không camera, vân tay, push thật, GPS thật...); không có TC nào `Y` ở cả hai cờ; các chiều đặc thù mobile áp dụng được đã có TC.
 
 ## Đầu ra
 Ghi `_workspace/04_review.json`:
@@ -28,7 +29,7 @@ Ghi `_workspace/04_review.json`:
 {
   "verdict": "PASS | NEEDS_WORK",
   "gaps": [
-    {"id": "G-01", "severity": "high | medium | low", "kind": "uncovered_req | missing_dimension | vague | duplicate | wrong_expected | sensitive_data | unsafe_chrome_flag",
+    {"id": "G-01", "severity": "high | medium | low", "kind": "uncovered_req | missing_dimension | vague | duplicate | wrong_expected | sensitive_data | unsafe_chrome_flag | unsafe_mobile_flag | wrong_platform",
      "target": "REQ-03 hoặc TC-AUTH-004", "detail": "Điều cụ thể đang thiếu/sai", "suggestion": "TC nên bổ sung hoặc cách sửa"}
   ]
 }

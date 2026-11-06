@@ -9,6 +9,7 @@ import re
 STATUSES = ["Not Run", "Pass", "Fail", "Blocked", "Skipped"]
 PRIORITIES = ["P0", "P1", "P2", "P3"]
 MAPPING_STATUSES = ["MATCH", "CONFLICT", "MISSING_IN_SPEC", "AMBIGUOUS", "SPEC_ONLY"]
+PLATFORMS = ["Web", "Android", "iOS"]
 
 # Tên miền email được phép (địa chỉ giả dùng cho dữ liệu test)
 SAFE_EMAIL_DOMAINS = ("example.com", "example.org", "example.net", "test.local", "test.invalid", "mailinator.test")
@@ -72,7 +73,7 @@ def fail_on_secrets(obj, label):
     import sys
     found = scan_obj(obj)
     if found:
-        print(f"[BẢO MẬT] Dừng: phát hiện {len(found)} chuỗi nhạy cảm trong {label}. Không ghi file Excel.", file=sys.stderr)
+        print(f"[BẢO MẬT] Dừng: phát hiện {len(found)} chuỗi nhạy cảm trong {label}. Không ghi file đầu ra.", file=sys.stderr)
         for path, kind, val in found[:30]:
             print(f"  - {path}: {kind} ({val})", file=sys.stderr)
         print("Thay bằng placeholder dạng <TEN_BIEN> hoặc email @example.com rồi chạy lại.", file=sys.stderr)

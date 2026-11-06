@@ -34,7 +34,9 @@
       "test_data": "Mật khẩu: <PWD_7_CHARS> (7 ký tự, gồm chữ và số)",
       "steps": ["Mở trang đăng ký", "Nhập mật khẩu <PWD_7_CHARS> vào ô Mật khẩu", "Bấm nút Đăng ký"],
       "expected": "Không tạo tài khoản; hiển thị thông báo \"Mật khẩu tối thiểu 8 ký tự\" dưới ô Mật khẩu",
+      "platform": "Web",
       "chrome_testable": "Y",
+      "mobile_testable": "N",
       "notes": ""
     }
   ],
@@ -44,6 +46,8 @@
 }
 ```
 
+`platform` là `Web`, `Android` hoặc `iOS` (mặc định `Web` khi bỏ trống). `chrome_testable` và `mobile_testable` mặc định `N`, không được cùng là `Y` (script từ chối): chạy tự động bằng Chrome chỉ với `platform = Web`, bằng Maestro chỉ với `platform = Android`. TC `iOS` luôn `N`/`N` vì harness chưa chạy tự động iOS. Với app có cả Android và iOS, TC hành vi khác nhau thì tách theo nền tảng; hành vi giống nhau thì viết một TC cho `Android` và ghi trong `notes` rằng iOS cần chạy tay.
+
 Các trường `status`, `actual`, `executed_at`, `executed_by` để trống khi thiết kế (mặc định `Not Run`).
 `steps` và `expected` có thể là chuỗi hoặc mảng chuỗi (mảng được tự đánh số).
 
@@ -52,8 +56,8 @@ Các trường `status`, `actual`, `executed_at`, `executed_by` để trống kh
 ```json
 {
   "run_label": "Chạy thử lần 1",
-  "executed_by": "Claude in Chrome",
-  "env": "Tên môi trường test (không ghi URL có token)",
+  "executed_by": "Claude in Chrome | Maestro (Android emulator)",
+  "env": "Tên môi trường test (không ghi URL có token); với mobile: tên AVD và phiên bản build, không ghi đường dẫn APK",
   "results": [
     {"tc_id": "TC-AUTH-001", "status": "Pass | Fail | Blocked | Skipped", "actual": "Mô tả kết quả thực tế bằng chữ, đã che dữ liệu nhạy cảm", "note": "Với Fail: bước lệch, hành vi thấy được; với Blocked/Skipped: lý do"}
   ]

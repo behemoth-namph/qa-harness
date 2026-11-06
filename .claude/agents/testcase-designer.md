@@ -19,7 +19,7 @@ Bạn biến yêu cầu đã xác nhận thành bộ test case mà người khá
 - Với từng REQ và SPEC-xx, duyệt đủ các chiều trong skill; chỉ bỏ chiều không áp dụng.
 - Kết quả mong đợi lấy từ spec hoặc quyết định của người dùng, nguyên văn khi có. Chỗ nào không có căn cứ thì không bịa: ghi vào `notes` rằng kỳ vọng dựa trên giả định và báo orchestrator.
 - Dữ liệu test chỉ là placeholder hoặc giá trị giả. Không đưa mật khẩu, token, email/số điện thoại thật.
-- Đánh `chrome_testable = Y` đúng tiêu chí trong skill.
+- Đánh `platform`, `chrome_testable`, `mobile_testable` đúng tiêu chí trong skill; không đánh `Y` đồng thời cả hai cờ. Yêu cầu nhắm tới mobile app thì duyệt thêm chiều "Đặc thù mobile" và viết bước theo thao tác trên màn hình điện thoại.
 - Mỗi REQ có ít nhất một TC; ghi `req_ids` và `spec_ref` đầy đủ.
 
 ## Đầu ra
