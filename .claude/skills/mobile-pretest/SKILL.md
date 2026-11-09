@@ -24,7 +24,7 @@ Trước khi làm, đọc `.claude/skills/qa-security-policy/SKILL.md` (mục 5 
    - Đối chiếu kết quả mong đợi bằng các lệnh kiểm `assertVisible` / `assertNotVisible` trong flow; việc kiểm văn bản thông báo phải khớp nguyên văn kỳ vọng.
 4. Phân loại:
    - **Pass**: mọi bước chạy được và các assert kỳ vọng đúng.
-   - **Fail**: bước chạy được nhưng assert kỳ vọng sai (hành vi app khác kỳ vọng). Ghi bước lệch, hành vi thấy, hành vi mong đợi; không đoán nguyên nhân.
+   - **Fail**: bước chạy được nhưng assert kỳ vọng sai (hành vi app khác kỳ vọng). Ghi bước lệch, hành vi thấy, hành vi mong đợi; không đoán nguyên nhân. Chạy lại flow một lần nữa để xác nhận và ghi thêm `repro`, `failed_step`, `summary`, `evidence` (định dạng ở `testcase-format.md`) để orchestrator lập bug chuẩn cho dev bằng skill `bug-report`.
    - **Blocked**: không thực hiện được do môi trường/công cụ (không tìm thấy phần tử sau 2 lần sửa flow, app crash lúc khởi động trước bước đầu, emulator mất kết nối, điều kiện tiên quyết hỏng). Khác Fail ở chỗ chưa thể kết luận về hành vi của app.
    - **Skipped**: bỏ qua có chủ ý (cần nhập mật khẩu, OTP/SMS/email thật, camera, vân tay, push thật, thanh toán, thao tác phá hủy, hoặc phần cứng emulator không giả lập được).
 5. Sau mỗi nhóm khoảng 10 TC ghi tạm `_workspace/05_pretest_results.json` (dùng `executed_by: "Maestro (Android emulator)"`).

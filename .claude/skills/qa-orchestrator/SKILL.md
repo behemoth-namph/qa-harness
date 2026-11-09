@@ -1,6 +1,6 @@
 ---
 name: qa-orchestrator
-description: "Điều phối toàn bộ quy trình QA cho web và mobile app (Android): nhận yêu cầu đầu vào, đối chiếu với spec trong specs/, hỏi lại người đưa yêu cầu về điểm sai/thiếu/mơ hồ, thiết kế test case đầy đủ và xuất file Excel vào output/, rồi hỏi có chạy thử trước không (web bằng Claude in Chrome; mobile app Android bằng Maestro trên emulator, tự dựng môi trường) và ghi kết quả vào cùng file Excel. Dùng khi người dùng đưa một yêu cầu/tính năng/user story/bug cần phân tích, viết test case, đối chiếu spec, hoặc kiểm thử, kể cả khi nói test trên mobile/app/Android/điện thoại/emulator. Cũng dùng cho các yêu cầu tiếp theo: cập nhật, bổ sung, sửa test case, chạy lại pretest, chạy tiếp các TC chưa chạy, cài đặt/dựng lại môi trường mobile (kể cả người dùng mới chưa có công cụ), phân tích lại khi spec hoặc yêu cầu thay đổi."
+description: "Điều phối toàn bộ quy trình QA cho web và mobile app (Android): nhận yêu cầu đầu vào, đối chiếu với spec trong specs/, hỏi lại người đưa yêu cầu về điểm sai/thiếu/mơ hồ, thiết kế test case đầy đủ và xuất file Excel vào output/, rồi hỏi có chạy thử trước không (web bằng Claude in Chrome; mobile app Android bằng Maestro trên emulator, tự dựng môi trường) và ghi kết quả vào cùng file Excel. Dùng khi người dùng đưa một yêu cầu/tính năng/user story/bug cần phân tích, viết test case, đối chiếu spec, hoặc kiểm thử, kể cả khi nói test trên mobile/app/Android/điện thoại/emulator. Cũng dùng cho các yêu cầu tiếp theo: cập nhật, bổ sung, sửa test case, chạy lại pretest, chạy tiếp các TC chưa chạy, cài đặt/dựng lại môi trường mobile (kể cả người dùng mới chưa có công cụ), phân tích lại khi spec hoặc yêu cầu thay đổi. Cũng dùng khi người dùng muốn log bug / viết bug report / ghi lỗi cho dev / chuẩn hóa hoặc làm rõ file bug (mô tả mơ hồ, thiếu cách tái hiện, thiếu dẫn chứng), lập file bug mẫu, hoặc chuyển test case Fail thành bug."
 ---
 
 # QA Orchestrator
@@ -18,7 +18,7 @@ Bắt buộc đọc `.claude/skills/qa-security-policy/SKILL.md` ngay khi bắt 
 | testcase-reviewer (sonnet) | subagent | testcase-design | `_workspace/04_review.json` |
 | browser-tester (sonnet) | agent đặt tên, tiếp tục bằng SendMessage; chỉ khi chạy web | browser-pretest | `_workspace/05_pretest_results.json` |
 | mobile-tester (sonnet) | agent đặt tên, tiếp tục bằng SendMessage; chỉ khi chạy mobile | mobile-pretest | `_workspace/05_pretest_results.json`, flow ở `_workspace/mobile/flows/` |
-| Orchestrator (bạn) | phiên chính | qa-orchestrator, mobile-env-setup | Excel trong `output/`, làm việc với người dùng, môi trường mobile (`_workspace/mobile/env.json`) |
+| Orchestrator (bạn) | phiên chính | qa-orchestrator, mobile-env-setup, bug-report | Excel trong `output/` (test case và log bug), làm việc với người dùng, môi trường mobile (`_workspace/mobile/env.json`) |
 
 ## Quy ước định dạng tài liệu
 
@@ -27,6 +27,7 @@ Người đọc là QA/PM mở file bằng Word hoặc Excel. File `.md` hiện 
 | Loại nội dung | Định dạng | Nơi lưu | Công cụ |
 |---|---|---|---|
 | Bảng test case, kết quả chạy thử, truy vết | `.xlsx` | `output/` | `build_xlsx.py`, `write_results.py` |
+| Log bug giao cho dev | `.xlsx` | `output/BugLog_<tên>_<YYYYMMDD>.xlsx` | `draft_bugs.py`, `build_bugs_xlsx.py` (skill `bug-report`) |
 | Đề xuất, báo cáo, ghi chú, đề xuất cập nhật spec, mọi văn bản người dùng yêu cầu | `.docx` | `output/` | `build_docx.py` (định dạng ở `.claude/skills/testcase-design/references/document-format.md`) |
 | Dữ liệu trung gian giữa các agent | `.json` (hoặc `.md` nội bộ) | `_workspace/` | agent ghi trực tiếp |
 | Tóm tắt trong cuộc trò chuyện | văn bản ngắn | chat | nêu kết luận và đường dẫn file, không dán nguyên tài liệu dài |
@@ -40,6 +41,7 @@ Không tạo tài liệu bằng Claude Docs, Notion hay Google Docs: chính sác
 3. Xác định kiểu yêu cầu:
    - Chưa có `_workspace/03_testcases.json` hoặc người dùng đưa yêu cầu **mới** → nếu `_workspace/` có nội dung thì chuyển sang `_workspace_<YYYYMMDD-HHMM>/`, chạy từ Bước 1.
    - Có `_workspace/` và người dùng muốn **sửa/bổ sung** bộ test → chỉ chạy lại từ bước bị ảnh hưởng (làm rõ → Bước 3; thiết kế → Bước 4; Excel → Bước 5). Excel cũ không ghi đè mà tạo bản mới có hậu tố `_v2`, `_v3`.
+   - Muốn **log bug / viết bug report / làm rõ file bug** (có hoặc không có test case) → nhảy tới Bước 7; không cần spec-mapping hay thiết kế test case.
    - Muốn **chạy thử/chạy lại** → nhảy tới Bước 6, dùng file Excel hiện có trong `output/`. Chạy lại mobile mà `_workspace/mobile/env.json` còn thì kiểm lại emulator còn chạy (`adb devices`) trước khi dùng; không còn thì dựng lại bằng `mobile-env-setup`.
 
 ## Bước 1: Tiếp nhận yêu cầu
@@ -92,7 +94,7 @@ Chọn nhánh theo cờ của các TC trong Excel: có TC `chrome_testable = Y` 
 4. Gọi `Agent` với `name: "browser-tester"`, `subagent_type: "browser-tester"`, prompt gồm: danh sách TC ID cần chạy, URL, tên miền được phép, đường dẫn các file.
 5. Khi browser-tester trả `NEEDS_USER_LOGIN`: bảo người dùng tự đăng nhập trên cửa sổ Chrome đó, đợi họ xác nhận (`AskUserQuestion` "Đã đăng nhập xong"), rồi `SendMessage({to: "browser-tester"}, "Đã đăng nhập, tiếp tục từ TC đang dở")`. Lặp lại khi cần; mật khẩu không bao giờ đi qua cuộc trò chuyện.
 6. Khi hoàn tất: chạy `write_results.py` để ghi vào **đúng file Excel đã tạo**. Mã 3 (dữ liệu nhạy cảm): sửa `05_pretest_results.json` bằng cách che dữ liệu rồi chạy lại.
-7. Báo cáo: số Pass/Fail/Blocked/Skipped, danh sách Fail kèm mô tả một dòng, TC chưa chạy và lý do. Nhắc người dùng đăng xuất và đóng tab test.
+7. Báo cáo: số Pass/Fail/Blocked/Skipped, danh sách Fail kèm mô tả một dòng, TC chưa chạy và lý do. Có TC Fail thì đề nghị lập log bug cho dev (Bước 7). Nhắc người dùng đăng xuất và đóng tab test.
 
 ### 6B. Mobile app Android bằng Maestro trên emulator
 
@@ -101,15 +103,24 @@ Chọn nhánh theo cờ của các TC trong Excel: có TC `chrome_testable = Y` 
 3. Gọi `Agent` với `name: "mobile-tester"`, `subagent_type: "mobile-tester"`, prompt gồm: danh sách TC ID cần chạy, đường dẫn `_workspace/mobile/env.json`, `_workspace/03_testcases.json` và nơi ghi kết quả.
 4. Khi mobile-tester trả `NEEDS_USER_LOGIN`: bảo người dùng tự đăng nhập trong cửa sổ emulator, đợi xác nhận (`AskUserQuestion` "Đã đăng nhập xong"), rồi `SendMessage({to: "mobile-tester"}, "Đã đăng nhập, tiếp tục từ TC đang dở")`. Mật khẩu không bao giờ đi qua cuộc trò chuyện. Agent xin lệnh `adb` ngoài danh sách cho phép thì không cho phép mặc định: hỏi người dùng và chỉ chấp nhận khi lệnh không đọc dữ liệu cá nhân/tài khoản.
 5. Khi hoàn tất: chạy `write_results.py` vào **đúng file Excel đã tạo** (mã 3 xử lý như 6A). Kiểm tra `_workspace/mobile/out` không còn ảnh/video; còn thì xóa.
-6. Báo cáo như 6A, thêm TC `Skipped` vì cần nhập mật khẩu/phần cứng. Nhắc người dùng đăng xuất app test và hỏi có tắt emulator không.
+6. Báo cáo như 6A (kể cả đề nghị lập log bug cho TC Fail), thêm TC `Skipped` vì cần nhập mật khẩu/phần cứng. Nhắc người dùng đăng xuất app test và hỏi có tắt emulator không.
 
-## Bước 7: Kết thúc
+## Bước 7: Log bug cho dev
+
+Dùng skill `bug-report` (đọc `SKILL.md` của skill trước khi làm). Bước này chạy khi: có TC Fail và người dùng đồng ý lập bug; người dùng đưa ghi chú bug thô cần chuẩn hóa; hoặc người dùng muốn file bug mẫu. Mục tiêu: dev đọc file mà **không phải hỏi lại QA**.
+
+1. Xác định nguồn: TC Fail → `draft_bugs.py` soạn nháp `_workspace/06_bugs.json`; ghi chú thô → tách từng bug và ghi JSON theo `bug-format.md`, chỉ chép điều người dùng đã nói; muốn file mẫu → `build_bugs_xlsx.py --template`.
+2. Hỏi người dùng các mục còn thiếu (`client`, `build`, tần suất, bước tái hiện, hiện tượng, dẫn chứng; xem `_todo` hoặc bảng "sáu câu"), gom theo bug, tối đa 4 câu mỗi lần. Không bịa; mục môi trường chưa biết thì ghi "Không rõ". Bug không có bước tái hiện hoặc hiện tượng cụ thể thì nói rõ là chưa đủ giao dev.
+3. Điền `expected_source` bằng cách tra `specs/` (khớp rõ ràng mới ghi), rồi chạy `build_bugs_xlsx.py` ra `output/BugLog_<tên-ngắn>_<YYYYMMDD>.xlsx`. Xử lý mã 2/3/4 như trong skill; không tắt bộ quét, không ghi đè file cũ (dùng `_v2`).
+4. Báo người dùng đường dẫn, số bug theo mức độ nghiêm trọng, cảnh báo chất lượng còn lại, và nhắc QA **tự dán link ảnh/video** vào cột tương ứng (harness không chụp, lưu hay tải ảnh lên đâu).
+
+## Bước 8: Kết thúc
 
 Tóm tắt kết quả, nêu việc người dùng có thể làm tiếp (bổ sung TC, chạy lại các TC Fail sau khi sửa lỗi, chạy các TC còn lại). Giữ nguyên `_workspace/` để truy vết. Nhắc rằng `specs/`, `output/` và `_workspace/` chứa thông tin nội bộ, không đưa lên kho mã công khai.
 
 ## Truyền dữ liệu giữa các bước
 
-Mọi thứ đi qua file trong `_workspace/` (`00_input.md`, `01_requirements.json`, `02_mapping_*.json`, `02_clarifications.json`, `03_testcases.json`, `04_review.json`, `05_pretest_results.json`, `mobile/env.json` và `mobile/flows/*.yaml` cho mobile, và `doc_*.json` là nội dung nguồn của tài liệu Word). Chỉ Excel và Word giao cho người đọc nằm ở `output/`.
+Mọi thứ đi qua file trong `_workspace/` (`00_input.md`, `01_requirements.json`, `02_mapping_*.json`, `02_clarifications.json`, `03_testcases.json`, `04_review.json`, `05_pretest_results.json`, `06_bugs.json` (nguồn của log bug), `mobile/env.json` và `mobile/flows/*.yaml` cho mobile, và `doc_*.json` là nội dung nguồn của tài liệu Word). Chỉ Excel và Word giao cho người đọc nằm ở `output/`.
 
 ## Xử lý lỗi
 
@@ -124,6 +135,8 @@ Mọi thứ đi qua file trong `_workspace/` (`00_input.md`, `01_requirements.js
 | Bản build trỏ production, hoặc có thiết bị thật đang cắm | Dừng. Chỉ làm tiếp khi người dùng đưa bản build test; mọi lệnh vẫn kèm serial `emulator-*` |
 | Hai nguồn spec mâu thuẫn | Giữ cả hai nguồn, hỏi người dùng (AMBIGUOUS) |
 | Người dùng muốn bỏ qua xác nhận | Cho phép, ghi vào giả định trong Excel |
+| Bug thiếu bước tái hiện/hiện tượng và người dùng không có thêm thông tin | Không dựng bug giả. Ghi bug vào log với trường chưa biết là "Không rõ" chỉ ở môi trường/build; thiếu bước hoặc hiện tượng thì không xuất, nêu rõ lý do và đề nghị tái hiện lại |
+| Link trong bug chứa token/key/session (mã 3 của `build_bugs_xlsx.py`) | Yêu cầu người dùng bỏ tham số đó khỏi link rồi chạy lại; không lưu giá trị, không tắt bộ quét |
 
 ## Kịch bản kiểm thử
 
@@ -132,3 +145,5 @@ Mọi thứ đi qua file trong `_workspace/` (`00_input.md`, `01_requirements.js
 **Lỗi:** Người dùng dán mật khẩu thật vào yêu cầu và chọn chạy thử nhưng URL là production. → Phần mật khẩu không được lưu, nhắc đổi mật khẩu; Bước 6 dừng ở xác nhận môi trường, chỉ chạy tiếp nếu người dùng cung cấp URL test hoặc cho phép rõ ràng chạy chỉ-đọc.
 
 **Mobile:** Người dùng nói "test app Android cho màn hình đăng ký" và đưa APK bản test. → Bước 1.4 ghi nền tảng Android; Bước 4 sinh TC có `platform = Android`, các TC đổi mạng/xoay màn hình/quyền có `mobile_testable = Y`, TC cần gõ mật khẩu hoặc OTP có `N`; Bước 6B dựng emulator, người dùng tự đăng nhập, mobile-tester chạy các TC `Y` và ghi `Skipped` cho TC dính mật khẩu; kết quả vào đúng Excel, `_workspace/mobile/out` không còn ảnh.
+
+**Bug:** Người dùng dán file bug cũ có dòng "Kịch bản chào không chạy", ưu tiên `1.0`, trạng thái `Open`, link chứa `project_token=...`. → Bước 7: tách thành một bug, hỏi các mục thiếu (màn hình/chức năng, bước tái hiện, thấy gì khi kịch bản không chạy, môi trường, build, tần suất); ưu tiên chuẩn hóa về 1/2/3 và trạng thái về `New`; link bị chặn (mã 3), bảo người dùng bỏ tham số token rồi chạy lại; ra `BugLog_<tên>_<ngày>.xlsx` với bước đánh số, thực tế vs mong đợi, tần suất, dẫn chứng bằng chữ và cột link ảnh để QA tự dán.

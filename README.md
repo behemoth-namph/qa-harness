@@ -7,6 +7,7 @@ Bộ agent và skill cho [Claude Code](https://claude.com/claude-code) giúp QA:
 3. Hỏi lại người đưa yêu cầu về các điểm sai/thiếu.
 4. Thiết kế test case đầy đủ, được một agent khác rà soát, rồi xuất file Excel vào `output/`.
 5. Nếu bạn đồng ý, chạy thử các test case trên môi trường test và ghi kết quả vào cùng file Excel: web bằng Claude in Chrome, mobile app Android bằng Maestro trên emulator.
+6. Lập file log bug chuẩn cho dev (từ test case Fail hoặc từ ghi chú bug của bạn): mô tả, môi trường, bước tái hiện, thực tế vs mong đợi, tần suất và dẫn chứng đủ để dev không phải hỏi lại.
 
 Harness chỉ chứa quy trình, không chứa spec hay dữ liệu của dự án nào. Mỗi dự án dùng một bản clone riêng.
 
@@ -35,6 +36,8 @@ python3 -m venv .venv
    - "Đối chiếu user story này với spec"
    - "Bổ sung test case phân quyền vào bộ test hiện tại"
    - "Chạy lại pretest cho các TC Fail"
+   - "Viết log bug cho các TC Fail" hoặc dán ghi chú bug cũ: "Chuẩn hóa các bug này để đưa cho dev"
+   - "Tạo file log bug mẫu"
 3. Trả lời các câu hỏi xác nhận về điểm lệch giữa yêu cầu và spec.
 4. Nhận file Excel tại `output/TestCases_<tên>_<YYYYMMDD>.xlsx`. Các tài liệu văn bản (đề xuất cập nhật spec, ghi chú thiếu sót/bảo mật) là file Word `.docx` cũng nằm trong `output/`; harness không giao file `.md` cho người đọc.
 5. Khi được hỏi có chạy thử bằng Chrome không: chọn Có thì **tự cung cấp link môi trường test** (không phải production) và **tự đăng nhập trực tiếp trên Chrome**.
@@ -67,6 +70,7 @@ Chạy lại script để xác nhận cho tới khi báo `MISSING_ITEMS=none`. L
     browser-pretest/       chạy thử bằng Chrome
     mobile-env-setup/      dựng môi trường mobile (Android SDK, Maestro, emulator, bản build test)
     mobile-pretest/        chạy thử mobile app bằng Maestro trên emulator
+    bug-report/            soạn và xuất file log bug chuẩn (Excel) cho dev, kể cả file mẫu trống
     qa-security-policy/    quy tắc bảo mật bắt buộc cho mọi bước
   settings.json            các tool bị chặn (đọc mật khẩu/cookie/network, tải file lên...)
 CLAUDE.md                  điều kiện gọi harness
@@ -83,6 +87,7 @@ Chi tiết ở `.claude/skills/qa-security-policy/SKILL.md`. Tóm tắt:
 - Agent không xử lý mật khẩu, OTP, token. Bạn tự đăng nhập trên Chrome hoặc trên cửa sổ emulator.
 - `javascript_tool`, `read_network_requests`, `gif_creator`... bị chặn để agent không đọc cookie, storage hay header xác thực.
 - Test case chỉ dùng placeholder hoặc dữ liệu giả. Script xuất Excel quét mật khẩu, token, thẻ, CCCD, số điện thoại, email thật và dừng nếu phát hiện.
+- Log bug: dẫn chứng là mô tả chữ; link ảnh/video do bạn tự dán, harness không chụp hay tải ảnh lên đâu; link chứa token/key/session bị chặn.
 - Mobile: chỉ emulator (không thiết bị thật), AVD không chứa tài khoản cá nhân, build trỏ backend test, không `maestro cloud/studio/record`, không lưu ảnh chụp màn hình. `.claude/settings.json` chặn thêm các lệnh `adb pull/backup/run-as/screencap`... làm lớp phụ; quy tắc chính nằm ở `qa-security-policy` mục 5.
 - Chỉ chạy trên môi trường test đã xác nhận, không làm thao tác không thể hoàn tác (xóa hàng loạt, thanh toán, gửi email/SMS thật).
 
