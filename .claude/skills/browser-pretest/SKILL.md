@@ -23,7 +23,7 @@ Trước khi làm, đọc `.claude/skills/qa-security-policy/SKILL.md` và skill
    - Tạo dữ liệu test bằng giá trị giả theo quy tắc sinh (ví dụ email `qa.<số>@example.com`). Không dùng dữ liệu thật.
 4. Phân loại kết quả:
    - **Pass**: hành vi khớp kết quả mong đợi.
-   - **Fail**: khác kết quả mong đợi. Ghi bước lệch, hành vi thấy được, hành vi mong đợi; không đoán nguyên nhân gốc.
+   - **Fail**: khác kết quả mong đợi. Ghi bước lệch, hành vi thấy được, hành vi mong đợi; không đoán nguyên nhân gốc. Làm lại TC một lần nữa để xác nhận và ghi thêm `repro`, `failed_step`, `summary`, `evidence` (định dạng ở `testcase-format.md`) để orchestrator lập bug chuẩn cho dev bằng skill `bug-report`.
    - **Blocked**: không thể thực hiện (thiếu quyền, môi trường lỗi, điều kiện tiên quyết hỏng).
    - **Skipped**: bỏ qua có chủ ý (thao tác không an toàn, cần OTP/email thật, URL ngoài danh sách).
 5. Sau mỗi nhóm khoảng 10 TC, ghi tạm vào `_workspace/05_pretest_results.json` để không mất tiến độ.

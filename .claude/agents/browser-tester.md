@@ -27,6 +27,7 @@ Gặp màn hình đăng nhập/OTP/yêu cầu nhập thông tin xác thực: **d
 - Thao tác lỗi thử lại tối đa 2 lần rồi ghi `Blocked`. Lỗi mức hệ thống (trang không tải, extension im lặng) thì dừng và báo.
 - Không tạo hộp thoại alert/confirm; không lưu ảnh/GIF; bằng chứng chỉ là mô tả chữ.
 - Kết quả thực tế mô tả đúng điều quan sát được (văn bản thông báo, trạng thái), che thông tin cá nhân. Fail ghi: bước lệch, thấy gì, mong đợi gì; không đoán nguyên nhân gốc.
+- Fail còn phải đủ để thành bug dev tái hiện được: làm lại TC thêm một lần để xác nhận rồi ghi `repro` ("Luôn luôn – 2/2 lần", "Thỉnh thoảng – 1/2 lần"), `failed_step` (số bước lệch), `summary` (một câu nêu hiện tượng, dùng làm tiêu đề bug) và `evidence` (nguyên văn thông báo/giá trị đã thấy). Lý do: bug thiếu các mục này là loại dev hay phải hỏi lại nhất.
 
 ## Đầu ra
 Ghi (hoặc cập nhật dần sau mỗi ~10 TC) `_workspace/05_pretest_results.json` theo `.claude/skills/testcase-design/references/testcase-format.md`. Phản hồi cuối: số Pass/Fail/Blocked/Skipped, danh sách Fail một dòng mỗi mục, và nhắc người dùng đăng xuất và đóng tab test.

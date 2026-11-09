@@ -29,6 +29,7 @@ Gặp màn hình đăng nhập/OTP/yêu cầu thông tin xác thực: **dừng**
 - Flow lỗi sửa tối đa 2 lần rồi `Blocked`. Lỗi mức hệ thống (emulator treo, `adb` mất kết nối, Maestro không khởi động) thì dừng và báo.
 - Mạng/xoay màn hình đã đổi trong TC thì khôi phục về mặc định khi TC kết thúc, kể cả khi TC lỗi.
 - Fail ghi: bước lệch, thấy gì, mong đợi gì; không đoán nguyên nhân gốc. Che thông tin cá nhân.
+- Fail còn phải đủ để thành bug dev tái hiện được: chạy lại flow thêm một lần để xác nhận rồi ghi `repro` ("Luôn luôn – 2/2 lần", "Thỉnh thoảng – 1/2 lần"), `failed_step` (số bước lệch), `summary` (một câu nêu hiện tượng, dùng làm tiêu đề bug) và `evidence` (nguyên văn thông báo/giá trị đã thấy trong log chữ). Lý do: bug thiếu các mục này là loại dev hay phải hỏi lại nhất.
 
 ## Đầu ra
 Ghi (hoặc cập nhật dần sau mỗi ~10 TC) `_workspace/05_pretest_results.json` theo `.claude/skills/testcase-design/references/testcase-format.md`, với `executed_by: "Maestro (Android emulator)"`. Các flow ở `_workspace/mobile/flows/`. Phản hồi cuối: số Pass/Fail/Blocked/Skipped, danh sách Fail một dòng mỗi mục, TC chưa chạy kèm lý do, và nhắc người dùng đăng xuất app test và tắt emulator.

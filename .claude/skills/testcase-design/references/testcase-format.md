@@ -59,7 +59,10 @@ Các trường `status`, `actual`, `executed_at`, `executed_by` để trống kh
   "executed_by": "Claude in Chrome | Maestro (Android emulator)",
   "env": "Tên môi trường test (không ghi URL có token); với mobile: tên AVD và phiên bản build, không ghi đường dẫn APK",
   "results": [
-    {"tc_id": "TC-AUTH-001", "status": "Pass | Fail | Blocked | Skipped", "actual": "Mô tả kết quả thực tế bằng chữ, đã che dữ liệu nhạy cảm", "note": "Với Fail: bước lệch, hành vi thấy được; với Blocked/Skipped: lý do"}
+    {"tc_id": "TC-AUTH-001", "status": "Pass | Fail | Blocked | Skipped", "actual": "Mô tả kết quả thực tế bằng chữ, đã che dữ liệu nhạy cảm", "note": "Với Fail: bước lệch, hành vi thấy được; với Blocked/Skipped: lý do",
+     "failed_step": 3, "summary": "(Fail) một câu nêu hiện tượng, dùng làm tiêu đề bug", "evidence": "(Fail) nguyên văn thông báo/giá trị đã thấy, vị trí trên màn hình", "repro": "(Fail) Luôn luôn – 2/2 lần"}
   ]
 }
 ```
+
+Các trường `failed_step`, `summary`, `evidence`, `repro` chỉ cho TC `Fail` và là tùy chọn với `write_results.py` (script bỏ qua chúng), nhưng `draft_bugs.py` (skill `bug-report`) dùng chúng để lập bug nháp đủ chi tiết cho dev. File có thể kèm `client` (trình duyệt/thiết bị + OS), `build`, `account` (vai trò, placeholder): các mục harness không tự biết, do người dùng cung cấp. Cũng được quét dữ liệu nhạy cảm như các trường khác.

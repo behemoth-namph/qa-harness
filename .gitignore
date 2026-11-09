@@ -5,6 +5,9 @@ specs/*
 !specs/README.md
 output/*
 !output/.gitkeep
+# File Excel/Word người dùng thả ở thư mục gốc (vd file bug mẫu của dự án) chứa thông tin nội bộ
+/*.xlsx
+/*.docx
 .env
 .env.*
 secrets/

@@ -25,7 +25,8 @@ Harness này chạm vào tài liệu nội bộ, môi trường test và tài kh
 - Dữ liệu trong test case chỉ là placeholder (`<TEST_USER_A>`, `<PWD_7_CHARS>`) hoặc dữ liệu giả rõ ràng (email `@example.com`, số điện thoại giả không thuộc nhà mạng thật). Mô tả quy tắc sinh dữ liệu (ví dụ "chuỗi 8 ký tự gồm chữ hoa, số") thay vì giá trị thật.
 - Nếu spec hoặc trang web chứa dữ liệu thật của khách hàng, không chép vào test case hay báo cáo; chỉ nêu loại dữ liệu ("họ tên khách hàng thật").
 - Ảnh chụp màn hình dùng để quan sát tạm thời. Không lưu ảnh/GIF ra đĩa, không nhúng vào Excel. Bằng chứng chỉ là mô tả bằng chữ, đã che dữ liệu nhạy cảm.
-- Script `build_xlsx.py` và `write_results.py` quét mật khẩu, token, khóa API, số thẻ, CCCD, số điện thoại, email thật trước khi ghi Excel và dừng nếu phát hiện. Khi bị chặn thì sửa dữ liệu, không tắt bộ quét.
+- Script `build_xlsx.py`, `write_results.py`, `build_bugs_xlsx.py` và `draft_bugs.py` quét mật khẩu, token, khóa API, số thẻ, CCCD, số điện thoại, email thật trước khi ghi Excel và dừng nếu phát hiện. Khi bị chặn thì sửa dữ liệu, không tắt bộ quét.
+- **Log bug (file giao cho dev, được chia sẻ rộng hơn test case):** dẫn chứng của harness là chữ (thông báo nguyên văn, giá trị hiển thị, vị trí trên màn hình), đã che dữ liệu thật. Cột "Link ảnh / video" do **QA tự dán** link đã có sẵn; harness không chụp, không lưu, không tải ảnh lên prnt.sc, Drive hay dịch vụ nào, vì làm vậy là gửi nội dung màn hình ra ngoài máy. Link màn hình lỗi chỉ là URL môi trường test do người dùng đưa, **đã bỏ tham số xác thực** (tên chứa `token`, `secret`, `passw`, `auth`, `session`, `jwt`, `otp`, `api_key`, hoặc là `key`/`sid`/`sig`): những tham số này dùng như mật khẩu, ai có link là vào được. `build_bugs_xlsx.py` dừng (mã 3) khi gặp; bỏ tham số đó thay vì tắt bộ quét. Khi người dùng đưa file bug cũ chứa link như vậy, không chép nguyên link sang file mới và nhắc họ đổi/thu hồi token đó.
 
 ## 4. An toàn khi thao tác trên trình duyệt
 
